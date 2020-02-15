@@ -1,5 +1,9 @@
 package ua.axiom.model.wearable;
 
+import ua.axiom.model.Knight;
+
+import java.util.Set;
+
 public enum ClothingPiece implements Wearable {
     Hat(7811.F),
     BackPack(150.F),
@@ -14,6 +18,14 @@ public enum ClothingPiece implements Wearable {
 
     public float getPrice() {
         return price;
+    }
+
+    public float getWeight() {
+        return 0;
+    }
+
+    public Set<Knight.BODY_PART> canBeWornAt() {
+        return null;
     }
 
     public String getName() {
