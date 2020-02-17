@@ -1,15 +1,12 @@
 package ua.axiom.model.wearable;
 
-import ua.axiom.model.Knight;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import ua.axiom.model.Knight;
 import static ua.axiom.model.Knight.BODY_PART.*;
-
-
 
 public interface Wearable {
     Set<Knight.BODY_PART> HEAD_BODY_PARTS
@@ -25,10 +22,12 @@ public interface Wearable {
     Set<Knight.BODY_PART> FEET_BODY_PART
             = Collections.unmodifiableSet(new HashSet<Knight.BODY_PART>(Arrays.asList(FEET_L, FEET_R)));
 
-    float getPrice();
+    abstract float getPrice();
 
-    float getWeight();
+    default float getWeight() {
+        return 0.F;
+    }
 
-    Set<Knight.BODY_PART> canBeWornAt();
+    abstract Set<Knight.BODY_PART> canBeWornAt();
 
 }

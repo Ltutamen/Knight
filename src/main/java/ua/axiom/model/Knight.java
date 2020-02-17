@@ -1,8 +1,6 @@
 package ua.axiom.model;
 
-import ua.axiom.model.wearable.ArmorPiece;
-import ua.axiom.model.wearable.ClothingPiece;
-import ua.axiom.model.wearable.Wearable;
+import ua.axiom.model.wearable.*;
 
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -26,6 +24,14 @@ public class Knight {
         result.addAll(clothes.values());
 
         return result;
+    }
+
+    public Set<ClothingPiece> getClothes() {
+        return new HashSet<>(clothes.values());
+    }
+
+    public Set<ArmorPiece> getArmors() {
+        return new HashSet<>(armor.values());
     }
 
     public void addArmorPiece(ArmorPiece armorPiece, BODY_PART bodyPart) {
