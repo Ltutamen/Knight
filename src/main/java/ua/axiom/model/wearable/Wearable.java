@@ -6,21 +6,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ua.axiom.model.Knight;
-import static ua.axiom.model.Knight.BODY_PART.*;
+import static ua.axiom.model.Knight.BodyPart.*;
 
 public interface Wearable {
-    Set<Knight.BODY_PART> HEAD_BODY_PARTS
-            = Collections.unmodifiableSet(new HashSet<Knight.BODY_PART>(Arrays.asList(HEAD)));
-    Set<Knight.BODY_PART> CHEST_BODY_PART
-            = Collections.unmodifiableSet(new HashSet<Knight.BODY_PART>(Arrays.asList(CHEST)));
-    Set<Knight.BODY_PART> LEGS_BODY_PART
-            = Collections.unmodifiableSet(new HashSet<Knight.BODY_PART>(Arrays.asList(CHEST)));
-    Set<Knight.BODY_PART> HANDS_BODY_PART
-            = Collections.unmodifiableSet(new HashSet<Knight.BODY_PART>(Arrays.asList(ARM_L, ARM_R)));
-    Set<Knight.BODY_PART> PALM_BODY_PART
-            = Collections.unmodifiableSet(new HashSet<Knight.BODY_PART>(Arrays.asList(PALM_L, PALM_R)));
-    Set<Knight.BODY_PART> FEET_BODY_PART
-            = Collections.unmodifiableSet(new HashSet<Knight.BODY_PART>(Arrays.asList(FEET_L, FEET_R)));
+    Set<Knight.BodyPart> HEAD_BODY_PARTS
+            = Collections.unmodifiableSet(new HashSet<Knight.BodyPart>(Arrays.asList(HEAD)));
+    Set<Knight.BodyPart> CHEST_BODY_PART
+            = Collections.unmodifiableSet(new HashSet<Knight.BodyPart>(Arrays.asList(CHEST)));
+    Set<Knight.BodyPart> LEGS_BODY_PART
+            = Collections.unmodifiableSet(new HashSet<Knight.BodyPart>(Arrays.asList(CHEST)));
+    Set<Knight.BodyPart> HANDS_BODY_PART
+            = Collections.unmodifiableSet(new HashSet<Knight.BodyPart>(Arrays.asList(ARM_L, ARM_R)));
+    Set<Knight.BodyPart> PALM_BODY_PART
+            = Collections.unmodifiableSet(new HashSet<Knight.BodyPart>(Arrays.asList(PALM_L, PALM_R)));
+    Set<Knight.BodyPart> FEET_BODY_PART
+            = Collections.unmodifiableSet(new HashSet<Knight.BodyPart>(Arrays.asList(FEET_L, FEET_R)));
 
     abstract float getPrice();
 
@@ -28,6 +28,6 @@ public interface Wearable {
         return 0.F;
     }
 
-    abstract Set<Knight.BODY_PART> canBeWornAt();
+    abstract Set<Knight.BodyPart> canBeWornAt();
 
 }

@@ -1,14 +1,17 @@
 package ua.axiom.model.wearable;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import ua.axiom.model.Knight;
 
-import java.util.Set;
+import java.util.*;
 
 public enum ClothingPiece implements Wearable {
     Hat(7811.F),
     BackPack(150.F),
     Shoes(780.F),
     Gloves(410.F);
+
+    private static Map<Locale, Map<String, String>> localisations = new HashMap<>();
 
     private final float price;
 
@@ -24,11 +27,7 @@ public enum ClothingPiece implements Wearable {
         return 0;
     }
 
-    public Set<Knight.BODY_PART> canBeWornAt() {
-        return null;
-    }
-
-    public String getName() {
-        return this.toString();
+    public Set<Knight.BodyPart> canBeWornAt() {
+        throw new NotImplementedException();
     }
 }

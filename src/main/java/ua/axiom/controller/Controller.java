@@ -1,6 +1,6 @@
 package ua.axiom.controller;
 
-import ua.axiom.Viewer;
+import ua.axiom.viewer.Viewer;
 import ua.axiom.model.Model;
 import ua.axiom.model.wearable.Wearable;
 
@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static ua.axiom.Viewer.Message.*;
+import static ua.axiom.viewer.Viewer.Message.*;
 
 public class Controller {
     private Model model;
@@ -26,8 +26,6 @@ public class Controller {
     }
 
     public void processLoop() {
-        Scanner scanner = new Scanner(System.in);
-
         viewer.printLocalizedMessage(Viewer.Message.WELCOME_MSG);
 
         while (model.isRunning()) {
@@ -38,39 +36,21 @@ public class Controller {
         }
     }
 
-    private int getInput() {
-        Pattern pattern = Pattern.compile("[1-9]");
-
-        //  viewer.print(resources.getString("MESSAGE." + propertiesPrefix + "_REQUEST_MSG"));
-
-        while (true) {
-            Matcher matcher = pattern.matcher(scanner.nextLine());
-            if(matcher.matches()) {
-                viewer.printLocalizedMessage(CORRECT_DIGITAL_INPUT_MSG);
-                return Integer.parseInt(matcher.group());
-
-            } else {
-                viewer.print(
-                        resourceBundle.getString("Wrong digital input format"));
-            }
-        }
-    }
-
     public void mainMenuLoop() {
         boolean runningMainLoop = true;
         while (runningMainLoop) {
             viewer.printLocalizedMessage(MAIN_MENU_REQUEST_MSG);
             switch (getInput()) {
                 case 1: {
-                    System.out.println("gaga1");
+                    addArmorItemLoop();
                     break;
                 }
                 case 2: {
-                    System.out.println("frfrf2");
+                    addClothingLoop();
                     break;
                 }
                 case 3: {
-                    System.out.println("Rgsf3");
+                    getStatisticsLoop();
                     break;
                 }
                 default: {
@@ -85,23 +65,20 @@ public class Controller {
         boolean runAddArmorLoop = true;
         while (runAddArmorLoop) {
             viewer.printLocalizedMessage(ARMOR_SELECTION_MENU_MSG);
-            switch (getInput()) {
-                case 1: {
-                    break;
-                }
-                case 2: {
-                    break;
-                }
-                case 3: {
-                    break;
-                }
-                default: {
-                    viewer.printLocalizedMessage(INVALID_DIGITAL_INPUT_MSG);
-                }
-            }
+            viewer.print(viewer.getArmorSelectionMessage());
+
+            int armorItemToAdd = getInput();
+            int bodyPartToAdd = bodyPartSelectionLoop();
+
 
         }
+    }
 
+    public int bodyPartSelectionLoop() {
+        viewer.printLocalizedMessage(BODY_PART_SELECTION_MENU_MSG);
+        viewer.print(viewer.getBodyPartSelectionMessage());
+
+        return getInput();
     }
 
     public void addClothingLoop() {
@@ -113,7 +90,10 @@ public class Controller {
     }
 
     public void getStatisticsLoop() {
+        boolean runStatisticsLoop = true;
+        while (runStatisticsLoop) {
 
+        }
     }
 
     public void showKnightStatus() {
@@ -126,5 +106,22 @@ public class Controller {
 
         viewer.print(model.getArmorItems().toString());
         viewer.print(model.getWornClothing().toString());
+    }
+
+    //  todo move into other class
+    private int getInput() {
+        Pattern pattern = Pattern.compile("[1-9]");
+
+        while (true) {
+            Matcher matcher = pattern.matcher(scanner.nextLine());
+            if(matcher.matches()) {
+                viewer.printLocalizedMessage(CORRECT_DIGITAL_INPUT_MSG);
+                return Integer.parseInt(matcher.group());
+
+            } else {
+                viewer.print(
+                        resourceBundle.getString("Wrong digital input format"));
+            }
+        }
     }
 }

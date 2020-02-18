@@ -14,9 +14,9 @@ public enum  ArmorPiece implements Wearable {
 
     private final float weight;
     private final float price;
-    private final Set<Knight.BODY_PART> canBeWornAt;
+    private final Set<Knight.BodyPart> canBeWornAt;
 
-    private ArmorPiece(float weight, float price, Set<Knight.BODY_PART> canBeWornAt) {
+    private ArmorPiece(float weight, float price, Set<Knight.BodyPart> canBeWornAt) {
         this.weight = weight;
         this.price = price;
         this.canBeWornAt = canBeWornAt;
@@ -30,7 +30,7 @@ public enum  ArmorPiece implements Wearable {
         return weight;
     }
 
-    public Set<Knight.BODY_PART> canBeWornAt() {
+    public Set<Knight.BodyPart> canBeWornAt() {
         return canBeWornAt;
     }
 }

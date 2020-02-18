@@ -8,14 +8,14 @@ import java.util.Map;
 import java.util.Set;
 
 public class Knight {
-    public enum BODY_PART {HEAD, CHEST, ARM_L, ARM_R, LEGS, PALM_R, PALM_L, FEET_L, FEET_R }
+    public enum BodyPart {HEAD, CHEST, ARM_L, ARM_R, LEGS, PALM_R, PALM_L, FEET_L, FEET_R }
 
-    private Map<BODY_PART, ArmorPiece> armor;
-    private Map<BODY_PART, ClothingPiece> clothes;
+    private Map<BodyPart, ArmorPiece> armor;
+    private Map<BodyPart, ClothingPiece> clothes;
 
     public Knight() {
-        armor = new EnumMap<BODY_PART, ArmorPiece>(BODY_PART.class);
-        clothes = new EnumMap<BODY_PART, ClothingPiece>(BODY_PART.class);
+        armor = new EnumMap<BodyPart, ArmorPiece>(BodyPart.class);
+        clothes = new EnumMap<BodyPart, ClothingPiece>(BodyPart.class);
     }
 
     public Set<Wearable> getDressedItems() {
@@ -34,11 +34,12 @@ public class Knight {
         return new HashSet<>(armor.values());
     }
 
-    public void addArmorPiece(ArmorPiece armorPiece, BODY_PART bodyPart) {
+    public void addArmorPiece(ArmorPiece armorPiece, BodyPart bodyPart) {
         armor.put(bodyPart, armorPiece);
     }
 
-    private void addClothingPiece(ClothingPiece clothingPiece, BODY_PART bodyPart) {
+
+    private void addClothingPiece(ClothingPiece clothingPiece, BodyPart bodyPart) {
         clothes.put(bodyPart, clothingPiece);
     }
 
