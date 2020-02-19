@@ -1,16 +1,17 @@
 package ua.axiom.controller;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import ua.axiom.model.*;
+import ua.axiom.model.wearable.*;
 import ua.axiom.viewer.Viewer;
-import ua.axiom.model.Model;
-import ua.axiom.model.wearable.Wearable;
 
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Scanner;
-import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static ua.axiom.viewer.Viewer.Message.*;
 
 public class Controller {
     private Model model;
@@ -37,56 +38,67 @@ public class Controller {
     }
 
     public void mainMenuLoop() {
-        boolean runningMainLoop = true;
-        while (runningMainLoop) {
-            viewer.printLocalizedMessage(MAIN_MENU_REQUEST_MSG);
-            switch (getInput()) {
-                case 1: {
-                    addArmorItemLoop();
-                    break;
-                }
-                case 2: {
-                    addClothingLoop();
-                    break;
-                }
-                case 3: {
-                    getStatisticsLoop();
-                    break;
-                }
-                default: {
-                    //  todo refactor move into method
-                    viewer.printLocalizedMessage(INVALID_DIGITAL_INPUT_MSG);
-                }
+        viewer.printLocalizedMessage(Viewer.Message.MAIN_MENU_REQUEST_MSG);
+        switch (getInput()) {
+            case 1: {
+                addArmorItemLoop();
+                break;
+            }
+            case 2: {
+                addClothingItemLoop();
+                break;
+            }
+            case 3: {
+                getStatisticsLoop();
+                break;
+            }
+            default: {
+                //  todo refactor move into method
+                viewer.printLocalizedMessage(Viewer.Message.INVALID_DIGITAL_INPUT_MSG);
             }
         }
     }
 
     public void addArmorItemLoop() {
-        boolean runAddArmorLoop = true;
-        while (runAddArmorLoop) {
-            viewer.printLocalizedMessage(ARMOR_SELECTION_MENU_MSG);
-            viewer.print(viewer.getArmorSelectionMessage());
+        //  todo refactor
+        viewer.printLocalizedMessage(Viewer.Message.ARMOR_SELECTION_MENU_MSG);
+        viewer.print(viewer.getWearableSelectionMsg(ArmorPiece::values));
 
-            int armorItemToAdd = getInput();
-            int bodyPartToAdd = bodyPartSelectionLoop();
+        int armorItemToAdd = getInput();
+        int bodyPartToAdd = bodyPartSelectionLoop(model.getWearableByNumber(armorItemToAdd, ArmorPiece::values));
 
+        model.addArmorPiece(model.getWearableByNumber(armorItemToAdd, ArmorPiece::values), model.getBodyPartByNumber(bodyPartToAdd));
+    }
 
+    public void addClothingItemLoop() {
+        //  todo refactor
+        viewer.printLocalizedMessage(Viewer.Message.CLOTHING_SELECTION_MENU_MSG);
+        viewer.print(viewer.getWearableSelectionMsg(ClothingPiece::values));
+
+        int clothingItemToAdd = getInput();
+        int bodyPartToAdd = bodyPartSelectionLoop(model.getWearableByNumber(clothingItemToAdd, ClothingPiece::values));
+
+        model.addClothingPiece(model.getWearableByNumber(clothingItemToAdd, ClothingPiece::values), model.getBodyPartByNumber(bodyPartToAdd));
+
+    }
+
+    @Deprecated
+    public int bodyPartSelectionLoop(Wearable itemToWear) {
+        //  todo print msg that excludes unfitting body parts
+        while (true) {
+            viewer.printLocalizedMessage(Viewer.Message.BODY_PART_SELECTION_MENU_MSG);
+            viewer.print(viewer.getBodyPartSelectionMessage(itemToWear));
+
+            int selectedBodyPart = getInput();
+            if(itemToWear.canBeWornAt().contains(model.getBodyPartByNumber(selectedBodyPart))) {
+                return selectedBodyPart;
+            }
+            viewer.printLocalizedMessage(Viewer.Message.MENU_CANNOT_WEAR_ITEM_ON_BODYPART);
         }
     }
 
-    public int bodyPartSelectionLoop() {
-        viewer.printLocalizedMessage(BODY_PART_SELECTION_MENU_MSG);
-        viewer.print(viewer.getBodyPartSelectionMessage());
-
-        return getInput();
-    }
-
-    public void addClothingLoop() {
-        boolean runAddClothingLoop = true;
-        while (runAddClothingLoop) {
-
-        }
-
+    public int bodyPartSelectionLoop(Predicate<Wearable> predicate) {
+        throw new NotImplementedException();
     }
 
     public void getStatisticsLoop() {
@@ -97,10 +109,10 @@ public class Controller {
     }
 
     public void showKnightStatus() {
-        Set<Wearable> worn = model.getAllWornItems();
-        viewer.printLocalizedMessage(MENU_KNIGHT_INVENTORY_DESC);
+        Map<Knight.BodyPart, List<Wearable>> worn = model.getAllWornItems();
+        viewer.printLocalizedMessage(Viewer.Message.MENU_KNIGHT_INVENTORY_DESC);
         if(worn.size() == 0) {
-            viewer.printLocalizedMessage(MENU_KNIGHT_INVENTORY_EMPTY);
+            viewer.printLocalizedMessage(Viewer.Message.MENU_KNIGHT_INVENTORY_EMPTY);
             return;
         }
 
@@ -110,17 +122,16 @@ public class Controller {
 
     //  todo move into other class
     private int getInput() {
-        Pattern pattern = Pattern.compile("[1-9]");
+        Pattern pattern = Pattern.compile("[0-9]");
 
         while (true) {
             Matcher matcher = pattern.matcher(scanner.nextLine());
             if(matcher.matches()) {
-                viewer.printLocalizedMessage(CORRECT_DIGITAL_INPUT_MSG);
+                viewer.printLocalizedMessage(Viewer.Message.CORRECT_DIGITAL_INPUT_MSG);
                 return Integer.parseInt(matcher.group());
 
             } else {
-                viewer.print(
-                        resourceBundle.getString("Wrong digital input format"));
+                viewer.printLocalisedMessage("INVALID_DIGITAL_INPUT_MSG");
             }
         }
     }

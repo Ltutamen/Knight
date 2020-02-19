@@ -3,19 +3,25 @@ package ua.axiom.viewer;
 import ua.axiom.model.Knight;
 import ua.axiom.model.Model;
 import ua.axiom.model.wearable.ArmorPiece;
+import ua.axiom.model.wearable.Wearable;
 
 import java.io.PrintStream;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.function.Supplier;
 
 public class Viewer {
-    public enum Message{WELCOME_MSG, QUESTION_MSG,
+    public enum Message {
+        WELCOME_MSG, QUESTION_MSG,
         MAIN_MENU_REQUEST_MSG,
         CORRECT_DIGITAL_INPUT_MSG, INVALID_DIGITAL_INPUT_MSG,
         ARMOR_SELECTION_MENU_MSG,
+        CLOTHING_SELECTION_MENU_MSG,
         BODY_PART_SELECTION_MENU_MSG,
         MENU_KNIGHT_INVENTORY_DESC,
-        MENU_KNIGHT_INVENTORY_EMPTY}
+        MENU_KNIGHT_INVENTORY_EMPTY,
+        MENU_CANNOT_WEAR_ITEM_ON_BODYPART,
+        WORD_PRICE
+    }
 
     private Model model;
     private PrintStream printStream;
@@ -33,23 +39,17 @@ public class Viewer {
     }
 
     public void printLocalizedMessage(Message message) {
-        print(getLocalisedMessage(message));
+        print(messageContainer.getLocalisedMessage(message.toString()));
     }
 
-    public String getLocalisedMessage(Message message) {
-        return messageContainer.getLocalisedMessage(message.toString());
+    public void printLocalisedMessage(String message) {
+        print(messageContainer.getLocalisedMessage(message));
     }
 
-    public void print(String s) {
-        printStream.println(s);
-    }
-
-    //  todo refactor
+    @Deprecated
     public String getArmorSelectionMessage() {
         StringBuilder result = new StringBuilder();
-        List<ArmorPiece> armors = new ArrayList<>(Model.getAllArmorItems());
-
-        armors.sort(Comparator.comparing(Enum::toString));
+        List<ArmorPiece> armors = model.getOrderedWearableObjects(ArmorPiece::values);
 
         for (int i = 0; i<armors.size(); ++i) {
             result.append(i).append(". ");
@@ -62,11 +62,25 @@ public class Viewer {
         return result.toString();
     }
 
-    public String getBodyPartSelectionMessage() {
+    public String getWearableSelectionMsg(Supplier<Wearable[]> supplier) {
         StringBuilder result = new StringBuilder();
-        List<Knight.BodyPart> bodyParts = new ArrayList<>(Arrays.asList(Knight.BodyPart.values()));
+        List<Wearable> wearables = model.getOrderedWearableObjects(supplier);
 
-        bodyParts.sort(Comparator.comparing(Enum::toString));
+        for(int i = 0; i < wearables.size() ; ++i) {
+            result.append(i).append(". ");
+            Wearable w = wearables.get(i);
+
+            result.append(messageContainer.getLocalisedMessage(w.toString()));
+            result.append(", ").append(messageContainer.getLocalisedMessage(Message.WORD_PRICE.toString())).append(" - ");
+            result.append(w.getPrice()).append(",\n");
+        }
+
+        return result.toString();
+    }
+
+    public String getBodyPartSelectionMessage(Wearable item) {
+        StringBuilder result = new StringBuilder();
+        List<Knight.BodyPart> bodyParts = model.getOrderedBodyParts();
 
         for (int i = 0 ; i<bodyParts.size() ; ++i) {
             result.append(i).append(". ");
@@ -79,9 +93,15 @@ public class Viewer {
         return result.toString();
     }
 
+    public void print(String s) {
+        printStream.println(s);
+    }
+
     public static class ViewerBuilder {
+
         private Model model;
         private ResourceBundle resourceBundle;
+
         private PrintStream outStream = System.out;
 
         public ViewerBuilder(Model model, ResourceBundle resourceBundle) {
@@ -93,11 +113,11 @@ public class Viewer {
             outStream = stream;
             return this;
         }
-
         public Viewer build() {
             Viewer viewer = new Viewer(model, resourceBundle);
             viewer.printStream = outStream ;
             return viewer;
         }
+
     }
 }

@@ -3,6 +3,7 @@ package ua.axiom.model;
 import ua.axiom.model.wearable.*;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 public class Model {
     private Knight knight;
@@ -11,26 +12,10 @@ public class Model {
         this.knight = new Knight();
     }
 
-    public void addArmorPiece(ArmorPiece armorPiece, Knight.BodyPart bodyPart) {
-        knight.addArmorPiece(armorPiece, bodyPart);
-    }
-
-    public Set<ClothingPiece> getWornClothing() {
-        return knight.getClothes();
-    }
-
-    public Set<ArmorPiece> getArmorItems() {
-        return knight.getArmors();
-    }
-
-    public Set<Wearable> getAllWornItems() {
-        return knight.getDressedItems();
-    }
-
     public static Set<Wearable> getAllItems() {
         Set<Wearable> result = new HashSet<>();
         result.addAll(getAllArmorItems());
-        result.addAll(getAllClothingPiece());
+        result.addAll(getAllClothingItems());
 
         return result;
     }
@@ -39,12 +24,65 @@ public class Model {
         return new HashSet<>(Arrays.asList(ArmorPiece.values()));
     }
 
-    public static Set<ClothingPiece> getAllClothingPiece() {
+    public static Set<ClothingPiece> getAllClothingItems() {
         return new HashSet<>(Arrays.asList(ClothingPiece.values()));
     }
 
+    public void addArmorPiece(ArmorPiece armorPiece, Knight.BodyPart bodyPart) {
+        knight.addArmorPiece(armorPiece, bodyPart);
+    }
+
+    public void addClothingPiece(ClothingPiece clothingPiece, Knight.BodyPart bodyPart) {
+        knight.addClothingPiece(clothingPiece, bodyPart);
+    }
+
+    public Map<Knight.BodyPart, ClothingPiece> getWornClothing() {
+        return knight.getClothes();
+    }
+
+    public Map<Knight.BodyPart, ArmorPiece> getArmorItems() {
+        return knight.getArmors();
+    }
+
+    public Map<Knight.BodyPart, List<Wearable>> getAllWornItems() {
+        return knight.getDressedItems();
+    }
+
+    public <T extends Wearable> List<T> getOrderedWearableObjects(Supplier<T[]> supplier) {
+        List<T> result = new ArrayList<>(Arrays.asList(supplier.get()));
+
+        result.sort(Comparator.comparing(Wearable::toString));
+
+        return result;
+    }
+
+    public <T extends Wearable> T getWearableByNumber(int number, Supplier<T[]> supplier) {
+        List<T> orderedWearableList = getOrderedWearableObjects(supplier);
+
+        return orderedWearableList.get(number);
+    }
+
+    public List<Knight.BodyPart> getOrderedBodyParts() {
+        List<Knight.BodyPart> result = new ArrayList<>(Arrays.asList(Knight.BodyPart.values()));
+
+        result.sort(Comparator.comparing(Knight.BodyPart::toString));
+
+        return result;
+    }
+
+    public Knight.BodyPart getBodyPartByNumber(int number) {
+        return getOrderedBodyParts().get(number);
+    }
+
     public float getTotalWornPrice() {
-        return (float)knight.getDressedItems().stream().mapToDouble(Wearable::getPrice).reduce(0., Double::sum);
+        return (float)knight.
+                getDressedItems().
+                values().
+                stream().
+                flatMap(List::stream).
+                mapToDouble(Wearable::getPrice).
+                sum();
+
     }
 
     public boolean isRunning() {

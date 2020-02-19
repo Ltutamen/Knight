@@ -2,10 +2,7 @@ package ua.axiom.model;
 
 import ua.axiom.model.wearable.*;
 
-import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Knight {
     public enum BodyPart {HEAD, CHEST, ARM_L, ARM_R, LEGS, PALM_R, PALM_L, FEET_L, FEET_R }
@@ -18,29 +15,35 @@ public class Knight {
         clothes = new EnumMap<BodyPart, ClothingPiece>(BodyPart.class);
     }
 
-    public Set<Wearable> getDressedItems() {
-        Set<Wearable> result = new HashSet<Wearable>();
-        result.addAll(armor.values());
-        result.addAll(clothes.values());
+    public Map<BodyPart, List<Wearable>> getDressedItems() {
+        Map<BodyPart, List<Wearable>> result = new HashMap<>();
+        for(BodyPart bp : BodyPart.values()) {
+            List<Wearable> currentBodyPartList = new ArrayList<>(2);
+            currentBodyPartList.add(armor.get(bp));
+            currentBodyPartList.add(clothes.get(bp));
+
+            result.put(bp, currentBodyPartList);
+
+        }
 
         return result;
     }
 
-    public Set<ClothingPiece> getClothes() {
-        return new HashSet<>(clothes.values());
+    public Map<BodyPart, ClothingPiece> getClothes() {
+        return clothes;
     }
 
-    public Set<ArmorPiece> getArmors() {
-        return new HashSet<>(armor.values());
+    public Map<BodyPart, ArmorPiece> getArmors() {
+        return armor;
     }
 
     public void addArmorPiece(ArmorPiece armorPiece, BodyPart bodyPart) {
         armor.put(bodyPart, armorPiece);
     }
 
-
-    private void addClothingPiece(ClothingPiece clothingPiece, BodyPart bodyPart) {
+    public void addClothingPiece(ClothingPiece clothingPiece, BodyPart bodyPart) {
         clothes.put(bodyPart, clothingPiece);
     }
+
 
 }
