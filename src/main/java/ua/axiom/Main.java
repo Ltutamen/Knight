@@ -16,7 +16,7 @@ public class Main {
                 ViewerBuilder(model, resources).
                 build();
 
-        Controller controller = new Controller(model, viewer, resources, new Scanner(System.in));
+        Controller controller = new Controller(model, viewer, new Scanner(System.in));
         controller.processLoop();
     }
 }

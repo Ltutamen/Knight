@@ -13,16 +13,18 @@ import java.util.regex.Pattern;
 public class Controller {
     private Model model;
     private Viewer viewer;
-    private ResourceBundle resourceBundle;
     private Scanner scanner;
 
-    public Controller(Model model, Viewer viewer, ResourceBundle resourceBundle, Scanner scanner) {
+    public Controller(Model model, Viewer viewer, Scanner scanner) {
         this.model = model;
         this.viewer = viewer;
-        this.resourceBundle = resourceBundle;
         this.scanner = scanner;
     }
 
+    /**
+     * runs REPL, showing main menu of the programm,
+     * with options to add Items, show statistics ot exit
+     */
     public void processLoop() {
         viewer.printLocalisedMessage(Viewer.Message.WELCOME_MSG);
 
@@ -33,7 +35,13 @@ public class Controller {
         }
     }
 
-    public void mainMenuLoop() {
+    /**
+     * Shows main menu and calls other menu methods
+     * @see Controller.mainMenuLoop()
+     * @see Controller.addClothingitemLoop()
+     * @see Controller.getStatisticsLoop()
+     */
+    private void mainMenuLoop() {
         viewer.printLocalisedMessage(Viewer.Message.MAIN_MENU_REQUEST_MSG);
         switch (getInput()) {
             case 1: {
@@ -58,7 +66,10 @@ public class Controller {
         }
     }
 
-    public void addArmorItemLoop() {
+    /**
+     * Runs armor addition loop
+     */
+    private void addArmorItemLoop() {
         //  todo refactor
         viewer.printLocalisedMessage(Viewer.Message.ARMOR_SELECTION_MENU_MSG);
         viewer.print(viewer.getWearableSelectionMsg(ArmorPiece::values));
@@ -69,7 +80,10 @@ public class Controller {
         model.addArmorPiece(model.getWearableByNumber(armorItemToAdd, ArmorPiece::values), model.getBodyPartByNumber(bodyPartToAdd));
     }
 
-    public void addClothingItemLoop() {
+    /**
+     * Runs clothing addition loop
+     */
+    private void addClothingItemLoop() {
         //  todo refactor
         viewer.printLocalisedMessage(Viewer.Message.CLOTHING_SELECTION_MENU_MSG);
         viewer.print(viewer.getWearableSelectionMsg(ClothingPiece::values));
@@ -126,6 +140,10 @@ public class Controller {
         viewer.showItemList(wornItems);
     }
 
+    /**
+     * Allows user to enter two integer price values,
+     * and shows all items in Knight's inventory, that lies in given interval
+     */
     private void showItemsInPriceRange() {
         viewer.printLocalisedMessage(Viewer.Message.MSG_UPPER_BOUND_QUESTION);
         int upperBound = getInput();
@@ -137,6 +155,14 @@ public class Controller {
         viewer.showItemList(wornItems);
     }
 
+
+    /**
+     * @param itemToWear returned number represents such BodyPart, that
+     *                   given item can be put on it
+     * @return number that represents specific body part, that was entered by user
+     * and which can be used to get this BodyPart again
+     * @see ua.axiom.model.Model.getOrderedBodyParts()
+     */
     @Deprecated
     public int bodyPartSelectionLoop(Wearable itemToWear) {
         //  todo print msg that excludes unfitting body parts
@@ -152,22 +178,30 @@ public class Controller {
         }
     }
 
-    /*
-    public int bodyPartSelectionLoop(Predicate<Wearable> predicate) {
+    /**
+     * @param predicate additional test applied to input
+     * @return number that represents specific BodyPart, that was entered by the user,
+     * and passes Predicate test
+     * @see Controller.bodyPartSelectionLoop()
+     * @see ua.axiom.model.Model.getOrderedBodyParts()
+     */
+    public int bodyPartSelectionLoop(Predicate<Knight.BodyPart> predicate) {
         while (true) {
             viewer.printLocalisedMessage(Viewer.Message.BODY_PART_SELECTION_MENU_MSG);
             viewer.print(viewer.getBodyPartSelectionMessage());
 
             int selectedBodyPart = getInput();
-            if(itemToWear.canBeWornAt().contains(model.getBodyPartByNumber(selectedBodyPart))) {
+            if(predicate.test(model.getBodyPartByNumber(selectedBodyPart))) {
                 return selectedBodyPart;
             }
             viewer.printLocalisedMessage(Viewer.Message.MENU_CANNOT_WEAR_ITEM_ON_BODYPART);
         }
     }
-    */
 
 
+    /**
+     * Shows all items in knight's inventory
+     */
     public void showKnightStatus() {
         Map<Knight.BodyPart, List<Wearable>> worn = model.getAllWornItems();
         viewer.printLocalisedMessage(Viewer.Message.MENU_KNIGHT_INVENTORY_DESC);
@@ -182,7 +216,10 @@ public class Controller {
         viewer.print(model.getWornClothing().toString() + "\n");
     }
 
-    //  todo move into other class
+    /**
+     * Reads input from the keyboard, that can be any positive integer value
+     * @return integer value, entered by user
+     */
     private int getInput() {
         Pattern pattern = Pattern.compile("[0-9]+");
 
