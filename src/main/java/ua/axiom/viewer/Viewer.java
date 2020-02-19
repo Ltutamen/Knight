@@ -90,7 +90,7 @@ public class Viewer {
         return result.toString();
     }
 
-    public String getBodyPartSelectionMessage(Wearable item) {
+    public String getBodyPartSelectionMessage() {
         StringBuilder result = new StringBuilder();
         List<Knight.BodyPart> bodyParts = model.getOrderedBodyParts();
 

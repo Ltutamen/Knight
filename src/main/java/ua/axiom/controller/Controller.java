@@ -1,18 +1,14 @@
 package ua.axiom.controller;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import ua.axiom.model.*;
 import ua.axiom.model.wearable.*;
 import ua.axiom.viewer.Viewer;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import static ua.axiom.viewer.Viewer.Message.MSG_LOVER_BOUND_QUESTION;
-import static ua.axiom.viewer.Viewer.Message.MSG_UPPER_BOUND_QUESTION;
 
 public class Controller {
     private Model model;
@@ -30,11 +26,10 @@ public class Controller {
     public void processLoop() {
         viewer.printLocalisedMessage(Viewer.Message.WELCOME_MSG);
 
-        while (model.isRunning()) {
+        while (true) {
             showKnightStatus();
             viewer.printLocalisedMessage(Viewer.Message.QUESTION_MSG);
             mainMenuLoop();
-
         }
     }
 
@@ -132,9 +127,9 @@ public class Controller {
     }
 
     private void showItemsInPriceRange() {
-        viewer.printLocalisedMessage(MSG_UPPER_BOUND_QUESTION);
+        viewer.printLocalisedMessage(Viewer.Message.MSG_UPPER_BOUND_QUESTION);
         int upperBound = getInput();
-        viewer.printLocalisedMessage(MSG_LOVER_BOUND_QUESTION);
+        viewer.printLocalisedMessage(Viewer.Message.MSG_LOVER_BOUND_QUESTION);
         int loverBound = getInput();
 
         List<Wearable> wornItems = model.getAllWornItems(w -> w.getPrice() > loverBound && w.getPrice() < upperBound);
@@ -147,7 +142,7 @@ public class Controller {
         //  todo print msg that excludes unfitting body parts
         while (true) {
             viewer.printLocalisedMessage(Viewer.Message.BODY_PART_SELECTION_MENU_MSG);
-            viewer.print(viewer.getBodyPartSelectionMessage(itemToWear));
+            viewer.print(viewer.getBodyPartSelectionMessage());
 
             int selectedBodyPart = getInput();
             if(itemToWear.canBeWornAt().contains(model.getBodyPartByNumber(selectedBodyPart))) {
@@ -157,9 +152,21 @@ public class Controller {
         }
     }
 
+    /*
     public int bodyPartSelectionLoop(Predicate<Wearable> predicate) {
-        throw new NotImplementedException();
+        while (true) {
+            viewer.printLocalisedMessage(Viewer.Message.BODY_PART_SELECTION_MENU_MSG);
+            viewer.print(viewer.getBodyPartSelectionMessage());
+
+            int selectedBodyPart = getInput();
+            if(itemToWear.canBeWornAt().contains(model.getBodyPartByNumber(selectedBodyPart))) {
+                return selectedBodyPart;
+            }
+            viewer.printLocalisedMessage(Viewer.Message.MENU_CANNOT_WEAR_ITEM_ON_BODYPART);
+        }
     }
+    */
+
 
     public void showKnightStatus() {
         Map<Knight.BodyPart, List<Wearable>> worn = model.getAllWornItems();
