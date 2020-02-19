@@ -20,7 +20,14 @@ public class Viewer {
         MENU_KNIGHT_INVENTORY_DESC,
         MENU_KNIGHT_INVENTORY_EMPTY,
         MENU_CANNOT_WEAR_ITEM_ON_BODYPART,
-        WORD_PRICE
+        WORD_PRICE,
+        MENU_SHOW_STATISTICS_MSG,
+        TOTAL_WORN_PRICE_MSG,
+        WORD_CLOTHES,
+        WORD_ARMOR,
+        MSG_SORTED_ITEMS_SHOW,
+        MSG_UPPER_BOUND_QUESTION,
+        MSG_LOVER_BOUND_QUESTION
     }
 
     private Model model;
@@ -38,12 +45,16 @@ public class Viewer {
         this(model, resourceBundle, System.out);
     }
 
-    public void printLocalizedMessage(Message message) {
-        print(messageContainer.getLocalisedMessage(message.toString()));
+    public void printLocalisedMessage(Message message) {
+        print(messageContainer.getLocalisedMessage(message.toString()) + "\n");
     }
 
     public void printLocalisedMessage(String message) {
-        print(messageContainer.getLocalisedMessage(message));
+        printLocalisedMessage(message, "\n");
+    }
+
+    public void printLocalisedMessage(String message, String postfix) {
+        print(messageContainer.getLocalisedMessage(message) + postfix);
     }
 
     @Deprecated
@@ -62,6 +73,7 @@ public class Viewer {
         return result.toString();
     }
 
+    //  todo refactor
     public String getWearableSelectionMsg(Supplier<Wearable[]> supplier) {
         StringBuilder result = new StringBuilder();
         List<Wearable> wearables = model.getOrderedWearableObjects(supplier);
@@ -93,8 +105,14 @@ public class Viewer {
         return result.toString();
     }
 
+    public void showItemList(List<Wearable> items) {
+        for (Wearable item : items) {
+            printLocalisedMessage(item.toString(), ", ");
+        }
+    }
+
     public void print(String s) {
-        printStream.println(s);
+        printStream.print(s);
     }
 
     public static class ViewerBuilder {

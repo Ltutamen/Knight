@@ -17,13 +17,18 @@ public class Knight {
 
     public Map<BodyPart, List<Wearable>> getDressedItems() {
         Map<BodyPart, List<Wearable>> result = new HashMap<>();
+
         for(BodyPart bp : BodyPart.values()) {
             List<Wearable> currentBodyPartList = new ArrayList<>(2);
-            currentBodyPartList.add(armor.get(bp));
-            currentBodyPartList.add(clothes.get(bp));
+
+            if(armor.get(bp) != null) {
+                currentBodyPartList.add(armor.get(bp));
+            }
+            if(clothes.get(bp) != null) {
+                currentBodyPartList.add(clothes.get(bp));
+            }
 
             result.put(bp, currentBodyPartList);
-
         }
 
         return result;

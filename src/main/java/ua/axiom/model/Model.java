@@ -1,9 +1,12 @@
 package ua.axiom.model;
 
+import sun.security.acl.WorldGroupImpl;
 import ua.axiom.model.wearable.*;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class Model {
     private Knight knight;
@@ -68,6 +71,25 @@ public class Model {
         result.sort(Comparator.comparing(Knight.BodyPart::toString));
 
         return result;
+    }
+
+    public List<Wearable> getAllWearableItems() {
+        List<Wearable> result = new ArrayList<>();
+
+        result.addAll(Arrays.asList(ClothingPiece.values()));
+        result.addAll(Arrays.asList(ArmorPiece.values()));
+
+        return result;
+    }
+
+    public List<Wearable> getAllWornItems(Predicate<Wearable> predicate) {
+        Map<Knight.BodyPart, List<Wearable>> wornList = getAllWornItems();
+        return wornList.values().
+                stream().
+                flatMap(List::stream).
+                filter(predicate).
+                collect(Collectors.toList());
+
     }
 
     public Knight.BodyPart getBodyPartByNumber(int number) {
