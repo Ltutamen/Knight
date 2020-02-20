@@ -1,4 +1,3 @@
-import com.sun.xml.internal.ws.policy.AssertionSet;
 import org.junit.Assert;
 import org.junit.Test;
 import ua.axiom.model.Knight;
@@ -7,10 +6,8 @@ import ua.axiom.model.wearable.ArmorPiece;
 import ua.axiom.model.wearable.ClothingPiece;
 import ua.axiom.model.wearable.Wearable;
 
-import javax.jws.WebParam;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalDouble;
 import java.util.Random;
 
 public class ModelTest {
@@ -149,7 +146,7 @@ public class ModelTest {
     }
 
     @Test
-    public void getAllWornItems() {
+    public void testGetAllWornItemsAgain() {
         Model model = new Model();
 
         model.addArmorPiece(ArmorPiece.Helmet, Knight.BodyPart.HEAD);
@@ -170,8 +167,5 @@ public class ModelTest {
 
         Assert.assertTrue(notAResult.contains(ClothingPiece.BackPack));
         Assert.assertTrue(notAResult.contains(ClothingPiece.Hat));
-
     }
-
-
 }

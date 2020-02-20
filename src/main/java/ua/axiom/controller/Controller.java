@@ -131,13 +131,14 @@ public class Controller {
     private void showSortedWornItems() {
         viewer.printLocalisedMessage(Viewer.Message.MSG_SORTED_ITEMS_SHOW);
 
-        List<Wearable> wornItems = model.
+        model.
                 getAllWornItems(w -> true).
                 stream().
-                sorted(Comparator.comparing(Wearable::getWeight)).
-                collect(Collectors.toList());
-
-        viewer.showItemList(wornItems);
+                sorted(Comparator.comparing(Wearable::getPrice)).
+                forEach(w -> {
+                    viewer.printLocalisedMessage(w.toString(), "(");
+                    viewer.print("" + w.getPrice() + ") ");
+                });
     }
 
     /**
@@ -205,15 +206,15 @@ public class Controller {
     public void showKnightStatus() {
         Map<Knight.BodyPart, List<Wearable>> worn = model.getAllWornItems();
         viewer.printLocalisedMessage(Viewer.Message.MENU_KNIGHT_INVENTORY_DESC);
-        if(worn.size() == 0) {
+        if(worn.entrySet().stream().map(Map.Entry::getValue).allMatch(l -> l.size() == 0)) {
             viewer.printLocalisedMessage(Viewer.Message.MENU_KNIGHT_INVENTORY_EMPTY);
             return;
         }
 
         viewer.printLocalisedMessage(Viewer.Message.WORD_ARMOR);
-        viewer.print(model.getWornArmors().toString() + "\n");
+        viewer.printLocalisedWearableMap(model.getWornArmors());
         viewer.printLocalisedMessage(Viewer.Message.WORD_CLOTHES);
-        viewer.print(model.getWornClothing().toString() + "\n");
+        viewer.printLocalisedWearableMap(model.getWornClothing());
     }
 
     /**

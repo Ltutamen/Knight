@@ -33,18 +33,6 @@ public class Viewer {
     private Model model;
     private PrintStream printStream;
 
-    private LocalisedMessageContainer messageContainer;
-
-    private Viewer(Model model, ResourceBundle resourceBundle, PrintStream printStream) {
-        this.model = model;
-        this.printStream = printStream;
-        this.messageContainer = new LocalisedMessageContainer(resourceBundle);
-    }
-
-    private Viewer(Model model, ResourceBundle resourceBundle) {
-        this(model, resourceBundle, System.out);
-    }
-
     public void printLocalisedMessage(Message message) {
         print(messageContainer.getLocalisedMessage(message.toString()) + "\n");
     }
@@ -73,7 +61,6 @@ public class Viewer {
         return result.toString();
     }
 
-    //  todo refactor
     public String getWearableSelectionMsg(Supplier<Wearable[]> supplier) {
         StringBuilder result = new StringBuilder();
         List<Wearable> wearables = model.getOrderedWearableObjects(supplier);
@@ -105,6 +92,14 @@ public class Viewer {
         return result.toString();
     }
 
+    public <T extends Wearable> void printLocalisedWearableMap(Map<Knight.BodyPart, T> map) {
+        for(Map.Entry entry : map.entrySet()) {
+            printLocalisedMessage(entry.getKey().toString(), " - ");
+            printLocalisedMessage(entry.getValue().toString(), ";");
+            print("\n");
+        }
+    }
+
     public void showItemList(List<Wearable> items) {
         for (Wearable item : items) {
             printLocalisedMessage(item.toString(), ", ");
@@ -115,12 +110,25 @@ public class Viewer {
         printStream.print(s);
     }
 
+    private LocalisedMessageContainer messageContainer;
+
+    private Viewer(Model model, ResourceBundle resourceBundle, PrintStream printStream) {
+        this.model = model;
+        this.printStream = printStream;
+        this.messageContainer = new LocalisedMessageContainer(resourceBundle);
+    }
+
+    private Viewer(Model model, ResourceBundle resourceBundle) {
+        this(model, resourceBundle, System.out);
+    }
+
     public static class ViewerBuilder {
 
         private Model model;
-        private ResourceBundle resourceBundle;
 
+        private ResourceBundle resourceBundle;
         private PrintStream outStream = System.out;
+
 
         public ViewerBuilder(Model model, ResourceBundle resourceBundle) {
             this.model = model;
