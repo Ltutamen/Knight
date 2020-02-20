@@ -61,7 +61,7 @@ public class Model {
     /**
      * @return map from Knight's BodyPart to ArmorPiece, currently worn on it
      */
-    public Map<Knight.BodyPart, ArmorPiece> getArmorItems() {
+    public Map<Knight.BodyPart, ArmorPiece> getWornArmors() {
         return knight.getArmors();
     }
 
@@ -76,7 +76,7 @@ public class Model {
      * @param supplier source to take Wearable from
      * @return fixed-ordered list of elements from the supplier
      */
-    public <T extends Wearable> List<T> getOrderedWearableObjects(Supplier<T[]> supplier) {
+    public static  <T extends Wearable> List<T> getOrderedWearableObjects(Supplier<T[]> supplier) {
         List<T> result = new ArrayList<>(Arrays.asList(supplier.get()));
 
         result.sort(Comparator.comparing(Wearable::toString));
@@ -86,7 +86,7 @@ public class Model {
 
     /**
      * @param number that identifies Wearable, @see getOrderedWearableObjects
-     * @param supplier
+     * @param supplier specifies type and source
      * @param <T>
      * @return
      */

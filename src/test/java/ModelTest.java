@@ -1,12 +1,17 @@
-import com.sun.org.apache.xpath.internal.operations.Mod;
+import com.sun.xml.internal.ws.policy.AssertionSet;
 import org.junit.Assert;
 import org.junit.Test;
 import ua.axiom.model.Knight;
 import ua.axiom.model.Model;
 import ua.axiom.model.wearable.ArmorPiece;
 import ua.axiom.model.wearable.ClothingPiece;
+import ua.axiom.model.wearable.Wearable;
 
 import javax.jws.WebParam;
+import java.util.List;
+import java.util.Map;
+import java.util.OptionalDouble;
+import java.util.Random;
 
 public class ModelTest {
     @Test
@@ -61,4 +66,112 @@ public class ModelTest {
         model.addClothingPiece(ClothingPiece.Gloves, Knight.BodyPart.PALM_R);
         Assert.assertEquals(model.getAllWornItems((w) -> true).size(), 2);
     }
+
+    @Test
+    public void testGetWornClothing() {
+        Model model = new Model();
+
+        model.addClothingPiece(ClothingPiece.Gloves, Knight.BodyPart.HEAD);
+        model.addClothingPiece(ClothingPiece.Shoes, Knight.BodyPart.FEET_L);
+
+        Map<Knight.BodyPart, ClothingPiece> resultMap = model.getWornClothing();
+
+        Assert.assertEquals(resultMap.get(Knight.BodyPart.HEAD), ClothingPiece.Gloves);
+        Assert.assertEquals(resultMap.get(Knight.BodyPart.FEET_L), ClothingPiece.Shoes);
+    }
+
+    @Test
+    public void testGetWornArmors() {
+        Model model = new Model();
+
+        model.addArmorPiece(ArmorPiece.Leggins, Knight.BodyPart.LEGS);
+        model.addArmorPiece(ArmorPiece.ChestPlate, Knight.BodyPart.CHEST);
+
+        Map<Knight.BodyPart, ArmorPiece> resultMap = model.getWornArmors();
+
+        Assert.assertEquals(resultMap.get(Knight.BodyPart.LEGS), ArmorPiece.Leggins);
+        Assert.assertEquals(resultMap.get(Knight.BodyPart.CHEST), ArmorPiece.ChestPlate);
+    }
+
+    @Test
+    public void testGetAllWornItems() {
+        Model model = new Model();
+
+        model.addArmorPiece(ArmorPiece.ChestPlate, Knight.BodyPart.CHEST);
+        model.addClothingPiece(ClothingPiece.BackPack, Knight.BodyPart.CHEST);
+        model.addArmorPiece(ArmorPiece.Helmet, Knight.BodyPart.HEAD);
+
+        Map<Knight.BodyPart, List<Wearable>> allWornItems = model.getAllWornItems();
+
+        Assert.assertEquals(allWornItems.get(Knight.BodyPart.CHEST).size(), 2);
+        Assert.assertEquals(allWornItems.get(Knight.BodyPart.HEAD).size(), 1);
+
+        Assert.assertTrue(allWornItems.get(Knight.BodyPart.CHEST).contains(ArmorPiece.ChestPlate));
+        Assert.assertTrue(allWornItems.get(Knight.BodyPart.CHEST).contains(ClothingPiece.BackPack));
+
+        Assert.assertTrue(allWornItems.get(Knight.BodyPart.HEAD).contains(ArmorPiece.Helmet));
+
+
+    }
+
+    @Test
+    public void testGetOrderedWearableListContainsAll() {
+        List<Wearable> testOrdered = Model.getOrderedWearableObjects(ArmorPiece::values);
+
+        for (ArmorPiece ap : ArmorPiece.values()) {
+            Assert.assertTrue(testOrdered.contains(ap));
+        }
+
+        testOrdered = Model.getOrderedWearableObjects(ClothingPiece::values);
+
+        for (ClothingPiece cp : ClothingPiece.values()) {
+            Assert.assertTrue(testOrdered.contains(cp));
+        }
+    }
+
+    @Test
+    public void testOrderedWearableListConsistency() {
+        List<Wearable> testOrderedFirst = Model.getOrderedWearableObjects(ArmorPiece::values);
+        List<Wearable> testOrderedSecond = Model.getOrderedWearableObjects(ArmorPiece::values);
+
+        for (int i = 0; i < testOrderedFirst.size() ; ++i) {
+            Assert.assertEquals(testOrderedFirst.get(i), testOrderedSecond.get(i));
+        }
+    }
+
+    @Test
+    public void testGetWearableByNumber() {
+        List<Wearable> orderedList = Model.getOrderedWearableObjects(ClothingPiece::values);
+
+        int specificNumber = new Random().nextInt(orderedList.size());
+
+        Assert.assertEquals(Model.getOrderedWearableObjects(ClothingPiece::values).get(specificNumber), orderedList.get(specificNumber));
+    }
+
+    @Test
+    public void getAllWornItems() {
+        Model model = new Model();
+
+        model.addArmorPiece(ArmorPiece.Helmet, Knight.BodyPart.HEAD);
+        model.addArmorPiece(ArmorPiece.ChestPlate, Knight.BodyPart.CHEST);
+
+        model.addClothingPiece(ClothingPiece.BackPack, Knight.BodyPart.CHEST);
+        model.addClothingPiece(ClothingPiece.Hat, Knight.BodyPart.HEAD);
+
+        List<Wearable> aResult = model.getAllWornItems(w -> w.getPrice() < 6000 && w.getPrice() > 1000);
+
+        Assert.assertTrue(aResult.contains(ArmorPiece.Helmet));
+        Assert.assertTrue(aResult.contains(ArmorPiece.ChestPlate));
+
+        List<Wearable> notAResult = model.getAllWornItems(w -> w.getPrice() >= 6000 || w.getPrice() <= 1000);
+
+        Assert.assertFalse(notAResult.contains(ArmorPiece.Helmet));
+        Assert.assertFalse(notAResult.contains(ArmorPiece.ChestPlate));
+
+        Assert.assertTrue(notAResult.contains(ClothingPiece.BackPack));
+        Assert.assertTrue(notAResult.contains(ClothingPiece.Hat));
+
+    }
+
+
 }

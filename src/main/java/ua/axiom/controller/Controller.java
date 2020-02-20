@@ -211,7 +211,7 @@ public class Controller {
         }
 
         viewer.printLocalisedMessage(Viewer.Message.WORD_ARMOR);
-        viewer.print(model.getArmorItems().toString() + "\n");
+        viewer.print(model.getWornArmors().toString() + "\n");
         viewer.printLocalisedMessage(Viewer.Message.WORD_CLOTHES);
         viewer.print(model.getWornClothing().toString() + "\n");
     }
